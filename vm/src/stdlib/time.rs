@@ -14,7 +14,7 @@ mod time {
     };
     use chrono::{
         naive::{NaiveDate, NaiveDateTime, NaiveTime},
-        Datelike, Timelike,
+        Datelike, Timelike,DateTime,
     };
     use std::time::Duration;
 
@@ -113,14 +113,14 @@ mod time {
     fn pyobj_to_naive_date_time(
         value: Either<f64, i64>,
         vm: &VirtualMachine,
-    ) -> PyResult<NaiveDateTime> {
+    ) -> PyResult<DateTime> {
         let timestamp = match value {
             Either::A(float) => {
                 let secs = float.trunc() as i64;
                 let nsecs = (float.fract() * 1e9) as u32;
-                NaiveDateTime::from_timestamp_opt(secs, nsecs)
+                DateTime::from_timestamp(secs, nsecs)
             }
-            Either::B(int) => NaiveDateTime::from_timestamp_opt(int, 0),
+            Either::B(int) => DateTime::from_timestamp(int, 0),
         };
         timestamp.ok_or_else(|| {
             vm.new_overflow_error("timestamp out of range for platform time_t".to_owned())
